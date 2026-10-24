@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Qarbi AI — Glassmorphism Knowledge Workspace</title>
+<style>
+:root{--bg:#f5f7fb;--panel:#fff;--ink:#182230;--muted:#738094;--line:#e4e9f1;--blue:#5268e8;--blue-soft:#eef1ff;--teal:#20a89a;--amber:#d88a28;--purple:#8b63d9;--shadow:0 8px 30px rgba(29,45,75,.06)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font:14px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}
+button,input{font:inherit}button{cursor:pointer}.app{min-height:100vh;display:flex;flex-direction:column}
+.topbar{height:68px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 24px;gap:24px;position:sticky;top:0;z-index:5}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;letter-spacing:-.5px;min-width:240px}.logo{height:34px;width:34px;border-radius:11px;background:linear-gradient(135deg,#596df1,#8d67d9);display:grid;place-items:center;color:white;font-size:18px;box-shadow:0 5px 14px #6978e54a}
+.workspace{font-size:12px;color:var(--muted);border-left:1px solid var(--line);padding-left:20px}.workspace strong{color:var(--ink);display:block;font-size:13px}
+.top-actions{margin-left:auto;display:flex;align-items:center;gap:10px}.pill{border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:white;color:#536176}.avatar{width:32px;height:32px;border-radius:50%;background:#e8ecff;color:#4c5fce;display:grid;place-items:center;font-weight:700}
+.main{display:grid;grid-template-columns:226px minmax(420px,1fr) 326px;gap:16px;padding:18px;max-width:1800px;width:100%;margin:0 auto;flex:1;min-height:calc(100vh - 68px)}
+.sidebar,.detail,.source-panel,.graph-panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);min-width:0}
+.sidebar{padding:16px 12px;display:flex;flex-direction:column;gap:20px}.side-label{font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:#9aa4b4;font-weight:800;padding:0 10px;margin-bottom:7px}.nav-item{padding:10px;border-radius:10px;color:#657287;display:flex;gap:11px;align-items:center;cursor:pointer}.nav-item.active{background:var(--blue-soft);color:#4d5ed0;font-weight:700}.nav-ico{width:20px;text-align:center;font-size:16px}.source-card{margin:0 4px;border:1px solid var(--line);padding:12px;border-radius:12px;background:#fbfcfe}.source-thumb{height:88px;border-radius:8px;background:linear-gradient(135deg,#e7ecff,#dff4f0);display:grid;place-items:center;font-size:35px;margin-bottom:10px}.source-card strong{display:block;font-size:12px;line-height:1.4}.source-card small{display:block;color:var(--muted);font-size:11px;margin-top:4px}.mini-status{display:inline-flex;gap:5px;align-items:center;font-size:10px;color:#158475;margin-top:9px}.dot{height:6px;width:6px;background:#21b69f;border-radius:50%}
+.content{display:flex;flex-direction:column;gap:14px;min-width:0}.page-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:2px 2px 4px}.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:1.1px;color:#7b88a1;font-weight:800}.page-heading h1{font-size:23px;letter-spacing:-.7px;margin:3px 0 4px}.sub{color:var(--muted);font-size:12px}.btn{border:0;border-radius:10px;padding:10px 13px;font-weight:700;font-size:12px;display:inline-flex;align-items:center;gap:7px;justify-content:center}.primary{background:var(--blue);color:white;box-shadow:0 5px 14px #5268e833}.secondary{background:white;border:1px solid var(--line);color:#4c596e}.graph-panel{overflow:hidden;display:flex;flex-direction:column;min-height:560px}.panel-head{padding:15px 17px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px}.panel-head h2{font-size:14px;margin:0}.panel-head .sub{margin-top:2px}.head-right{margin-left:auto;display:flex;gap:7px;align-items:center}.tiny-btn{background:#fff;border:1px solid var(--line);color:#66748a;border-radius:8px;padding:7px 9px;font-size:11px}.legend{display:flex;gap:14px;flex-wrap:wrap;padding:11px 17px;border-bottom:1px solid #f0f2f6;color:#7c8799;font-size:10px}.legend span{display:flex;align-items:center;gap:5px}.legend i{width:7px;height:7px;border-radius:50%;display:inline-block}
+.graph-wrap{position:relative;flex:1;min-height:440px;background:radial-gradient(#e8ecf5 0.7px,transparent .7px);background-size:18px 18px;overflow:hidden}.graph-wrap svg{position:absolute;width:100%;height:100%;inset:0;touch-action:none}.edge{stroke:#d5dce8;stroke-width:1.6;fill:none}.edge.active{stroke:#7180ec;stroke-width:2.5}.edge-label{font-size:9px;fill:#9aa4b4}.node{cursor:grab;outline:none;touch-action:none}.node:active{cursor:grabbing}.layout-select{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 9px;font-size:11px;color:var(--ink);max-width:145px}.node .node-box{fill:white;stroke:#dfe5ef;stroke-width:1.2;filter:drop-shadow(0 3px 5px rgba(25,40,80,.06));transition:.18s}.node:hover .node-box{stroke:#8492f0;filter:drop-shadow(0 5px 8px rgba(75,92,200,.14))}.node.selected .node-box{stroke:#5268e8;stroke-width:2;fill:#f7f8ff}.node.root .node-box{fill:#5268e8;stroke:#5268e8}.node.root .n-title,.node.root .n-sub{fill:white}.node .n-title{font-size:11px;font-weight:750;fill:#273348}.node .n-sub{font-size:9px;fill:#8b96a8}.node .n-icon{font-size:15px}.node .badge{fill:#edf0ff}.node .badge-text{font-size:8px;fill:#5968d7;font-weight:700}.node.collapsed .node-box{stroke-dasharray:4 3}.graph-foot{padding:11px 16px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;color:#8b96a8;font-size:11px;gap:8px}.graph-foot strong{color:#536176}
+.detail{padding:0;display:flex;flex-direction:column;overflow:hidden}.detail-top{padding:18px;border-bottom:1px solid var(--line)}.detail-kicker{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#8c97aa;font-weight:800}.detail-title-row{display:flex;align-items:flex-start;gap:10px;margin:10px 0}.detail-icon{height:40px;width:40px;border-radius:12px;background:#edf0ff;display:grid;place-items:center;font-size:20px;flex-shrink:0}.detail h2{margin:0;font-size:18px;letter-spacing:-.4px}.detail p{color:#69768a;font-size:12px;line-height:1.65;margin:7px 0 0}.tag{display:inline-flex;padding:5px 8px;border-radius:7px;background:#f0f3f8;color:#6b778a;font-size:10px;font-weight:700;margin:3px 4px 0 0}.detail-section{padding:15px 17px;border-bottom:1px solid #eef1f5}.section-title{font-size:11px;font-weight:800;color:#536176;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}.source-ref{display:flex;gap:9px;align-items:flex-start;padding:9px;background:#f8faff;border:1px solid #edf0f7;border-radius:9px;margin-bottom:7px}.source-ref .ref-icon{font-size:16px}.source-ref strong{font-size:11px;display:block}.source-ref small{font-size:10px;color:#8a96a8;display:block;margin-top:3px}.confidence{font-size:10px;color:#168777;background:#e7f7f2;padding:3px 6px;border-radius:6px;margin-left:auto;white-space:nowrap}.related{display:flex;flex-wrap:wrap;gap:6px}.related button{border:1px solid var(--line);background:white;border-radius:8px;padding:7px 9px;font-size:10px;color:#536176}.related button:hover{border-color:#7d8aed;color:#5268e8}.learn-actions{padding:15px 17px;margin-top:auto;display:grid;gap:8px}.learn-actions .btn{width:100%}
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.info-card{background:white;border:1px solid var(--line);border-radius:14px;padding:15px;box-shadow:var(--shadow)}.info-card h3{margin:0 0 10px;font-size:12px}.metric-row{display:flex;gap:10px;align-items:center}.metric{font-size:22px;font-weight:800;letter-spacing:-.8px}.metric-note{font-size:10px;color:#8792a4}.progress{height:5px;border-radius:5px;background:#edf0f6;overflow:hidden;margin-top:9px}.progress span{height:100%;display:block;background:linear-gradient(90deg,#596df1,#31b7a3);width:72%}.activity{display:flex;gap:8px;align-items:center;font-size:11px;color:#647187;margin-top:8px}.activity b{color:#273348}
+.source-panel{padding:0;display:flex;flex-direction:column;overflow:hidden}.source-toolbar{display:flex;align-items:center;padding:13px 14px;border-bottom:1px solid var(--line);gap:8px}.source-toolbar strong{font-size:12px}.source-toolbar .tiny-btn{margin-left:auto}.source-content{padding:17px;flex:1;background:#fafbfd}.doc-page{max-width:320px;margin:0 auto;background:#fff;border:1px solid #e5e9f0;box-shadow:0 4px 16px #26334c0a;padding:18px 17px;border-radius:4px;min-height:355px;position:relative}.doc-top{display:flex;align-items:center;gap:8px;border-bottom:1px solid #e8ebf2;padding-bottom:10px;margin-bottom:12px}.doc-logo{width:26px;height:26px;border-radius:7px;background:#e9edff;color:#5669dc;display:grid;place-items:center;font-size:14px}.doc-top strong{font-size:10px}.doc-top small{display:block;color:#a0a8b7;font-size:8px}.doc-page h3{font-size:14px;line-height:1.3;margin:10px 0 6px}.doc-page p{font-size:9px;color:#7a8598;line-height:1.7;margin:5px 0}.diagram{height:136px;border:1px solid #e7ebf2;border-radius:8px;margin:13px 0 9px;position:relative;background:#fcfdff;display:flex;align-items:center;justify-content:center}.diagram svg{width:100%;height:100%}.highlight{cursor:pointer;transition:.2s}.highlight:hover,.highlight.chosen{stroke:#5268e8!important;stroke-width:3!important;fill:#e9edff!important}.source-note{font-size:10px;color:#8a95a6;text-align:center;margin-top:13px}.upload-zone{border:1px dashed #cbd3e4;border-radius:12px;padding:14px;text-align:center;background:#fbfcff;margin-top:15px}.upload-zone input{display:none}.upload-zone label{display:block;cursor:pointer;color:#5268e8;font-size:11px;font-weight:800}.upload-zone small{display:block;color:#8b96a8;font-size:10px;margin-top:5px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#182230;color:white;padding:11px 16px;border-radius:11px;font-size:12px;box-shadow:0 10px 30px #1722392b;opacity:0;pointer-events:none;transition:.25s;z-index:20}.toast.show{opacity:1}
+.modal-backdrop{position:fixed;inset:0;background:#1d29465e;display:none;align-items:center;justify-content:center;z-index:10;padding:20px}.modal-backdrop.open{display:flex}.modal{background:white;border-radius:16px;padding:22px;max-width:420px;width:100%;box-shadow:0 25px 80px #16203a40}.modal h2{font-size:18px;margin:0 0 7px}.modal p{font-size:12px;color:#738094;line-height:1.6}.modal textarea{width:100%;min-height:90px;border:1px solid var(--line);border-radius:10px;padding:10px;resize:vertical}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+@media(max-width:1250px){.main{grid-template-columns:190px minmax(400px,1fr)}.detail{grid-column:2;min-height:420px}.sidebar{grid-row:1 / span 2}.content{grid-column:2}.source-panel{display:none}}
+@media(max-width:800px){.topbar{padding:0 14px}.brand{min-width:0}.workspace{display:none}.main{display:flex;flex-direction:column;padding:10px}.sidebar{display:none}.page-heading h1{font-size:20px}.graph-panel{min-height:500px}.detail{min-height:420px}.bottom-grid{grid-template-columns:1fr}.top-actions .pill{display:none}}
+
+.detail-tabs{display:flex;gap:4px;padding:8px 10px;border-bottom:1px solid var(--line);background:#fbfcfe}.detail-tab{flex:1;border:0;background:transparent;border-radius:8px;padding:9px 8px;font-size:11px;font-weight:800;color:#8792a4}.detail-tab.active{background:#edf0ff;color:#5268e8}.detail-view{display:none;flex:1;min-height:0;flex-direction:column;overflow:auto}.detail-view.active{display:flex}.example-card{background:#fbfcff;border:1px solid #e8edf5;border-radius:10px;padding:10px;margin-top:8px}.example-card strong{font-size:11px;display:block;margin-bottom:4px}.example-card p{font-size:10px;margin:0;color:#758197;line-height:1.55}.chat-header{padding:15px 16px 12px;border-bottom:1px solid #eef1f5}.chat-header-row{display:flex;align-items:center;gap:9px}.bot-avatar{height:34px;width:34px;border-radius:11px;background:linear-gradient(135deg,#596df1,#8b63d9);color:white;display:grid;place-items:center;font-size:17px}.chat-header strong{font-size:12px;display:block}.chat-header small{font-size:10px;color:#8b96a8}.chat-context{margin-top:10px;padding:8px 9px;border-radius:9px;background:#f2f4ff;color:#5b67b4;font-size:10px;display:flex;gap:7px;align-items:center}.chat-messages{padding:13px;display:flex;flex-direction:column;gap:11px;flex:1;min-height:190px;overflow-y:auto}.message{max-width:94%;padding:10px 11px;border-radius:12px;font-size:11px;line-height:1.6;white-space:pre-wrap}.message.bot{align-self:flex-start;background:#f2f4f8;color:#465267;border-top-left-radius:4px}.message.user{align-self:flex-end;background:#5268e8;color:white;border-top-right-radius:4px}.message .msg-label{font-size:9px;font-weight:800;opacity:.7;display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}.quick-asks{padding:0 13px 12px;display:flex;gap:6px;flex-wrap:wrap}.quick-asks button{border:1px solid #e3e8f2;background:white;color:#657187;border-radius:8px;padding:7px 8px;font-size:10px;text-align:left}.chat-compose{border-top:1px solid var(--line);padding:11px;display:flex;gap:7px;align-items:flex-end}.chat-compose textarea{resize:none;min-height:39px;max-height:100px;flex:1;border:1px solid #dfe5ef;border-radius:10px;padding:10px;font:inherit;font-size:11px;outline:none}.chat-compose textarea:focus{border-color:#8995f0}.send-btn{height:39px;width:39px;border:0;border-radius:10px;background:#5268e8;color:white;font-size:16px}.chat-note{font-size:9px;color:#9aa4b4;text-align:center;padding:0 10px 10px}
+.atlas-empty-state{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;color:#536176;pointer-events:none}.atlas-empty-state strong{font-size:15px;color:#273348}.atlas-empty-state p{font-size:12px;line-height:1.6;max-width:280px;color:#8792a4;margin:8px 0 15px}.atlas-empty-state button{pointer-events:auto}
+/* Glassmorphism visual refresh — visual-only overrides */
+:root{
+  --bg:#0a1020;--panel:rgba(20,29,52,.58);--ink:#edf3ff;--muted:#a2b0ca;
+  --line:rgba(190,207,255,.17);--blue:#8b9bff;--blue-soft:rgba(123,139,255,.17);
+  --teal:#57e1cb;--amber:#ffc778;--purple:#c5a0ff;
+  --shadow:0 18px 50px rgba(0,0,0,.22)
+}
+html{background:#0a1020}
+body{
+  color:var(--ink);
+  background:radial-gradient(ellipse at 12% 8%,rgba(81,94,210,.32),transparent 36%),
+             radial-gradient(ellipse at 82% 18%,rgba(31,177,184,.19),transparent 32%),
+             radial-gradient(ellipse at 70% 90%,rgba(132,76,201,.22),transparent 38%),#0a1020;
+  background-attachment:fixed
+}
+.topbar{
+  background:rgba(10,16,32,.68);border-bottom-color:rgba(190,207,255,.16);
+  backdrop-filter:blur(22px) saturate(145%);-webkit-backdrop-filter:blur(22px) saturate(145%);
+  box-shadow:0 8px 30px rgba(0,0,0,.12)
+}
+.brand,.workspace strong,.page-heading h1,.panel-head h2,.detail h2,.section-title,.source-toolbar strong,.info-card h3,.activity b{color:#f1f5ff}
+.workspace{border-left-color:var(--line);color:#a2b0ca}
+.pill,.secondary,.tiny-btn,.related button{
+  background:rgba(255,255,255,.065);border-color:rgba(198,211,255,.2);color:#d6e0f5;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)
+}
+.pill:hover,.tiny-btn:hover,.secondary:hover,.related button:hover{background:rgba(145,160,255,.15);border-color:rgba(163,177,255,.5);color:#fff}
+.avatar{background:linear-gradient(135deg,#8c9aff,#bda1ff);color:#10162a}
+.sidebar,.detail,.source-panel,.graph-panel,.info-card{
+  background:linear-gradient(145deg,rgba(255,255,255,.105),rgba(255,255,255,.035));
+  border:1px solid rgba(202,216,255,.19);box-shadow:0 18px 50px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.08);
+  backdrop-filter:blur(22px) saturate(140%);-webkit-backdrop-filter:blur(22px) saturate(140%)
+}
+.sidebar{background:linear-gradient(160deg,rgba(35,48,82,.68),rgba(16,24,44,.62))}
+.side-label,.eyebrow,.detail-kicker{color:#91a1c2}
+.nav-item{color:#b2bfd8}
+.nav-item:hover{background:rgba(255,255,255,.07);color:#fff}
+.nav-item.active{background:rgba(128,143,255,.19);color:#dfe4ff;box-shadow:inset 0 0 0 1px rgba(155,168,255,.15)}
+.source-card,.source-ref{
+  background:rgba(255,255,255,.055);border-color:rgba(198,211,255,.14);color:#e6edff
+}
+.source-card small,.sub,.detail p,.source-ref small,.metric-note,.activity{color:#a5b2cb}
+.source-thumb{background:linear-gradient(135deg,rgba(123,141,255,.35),rgba(65,211,198,.22));border:1px solid rgba(255,255,255,.12)}
+.btn.primary{background:linear-gradient(135deg,#7889ff,#9d80ff);color:white;box-shadow:0 8px 24px rgba(100,115,255,.28)}
+.btn.primary:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.panel-head,.legend,.graph-foot,.detail-top,.detail-section,.source-toolbar{border-color:rgba(190,207,255,.14)}
+.legend{color:#9eacc6}
+.graph-wrap{background:radial-gradient(rgba(200,213,255,.2) .75px,transparent .75px);background-size:19px 19px}
+.edge{stroke:rgba(174,190,255,.43)}.edge.active{stroke:#a5b0ff}.edge-label{fill:#a5b2cf}
+.node .node-box{fill:rgba(26,39,68,.94);stroke:rgba(187,202,255,.42);filter:drop-shadow(0 5px 9px rgba(0,0,0,.22))}
+.node:hover .node-box{stroke:#b1bcff;filter:drop-shadow(0 6px 12px rgba(92,111,255,.28))}
+.node.selected .node-box{stroke:#a9b3ff;fill:rgba(77,91,164,.92)}
+.node.root .node-box{fill:url(#atlasRootGradient);stroke:#9daaff}
+.node .n-title{fill:#f0f4ff}.node .n-sub{fill:#b2bfd8}.node .badge{fill:rgba(145,158,255,.2)}.node .badge-text{fill:#dce2ff}
+.detail-icon{background:rgba(137,151,255,.19);border:1px solid rgba(187,198,255,.17)}
+.tag{background:rgba(255,255,255,.08);color:#c0cce4;border:1px solid rgba(190,207,255,.1)}
+.confidence{background:rgba(63,210,174,.14);color:#7ef0d1}
+.source-content{background:rgba(7,13,27,.22)}
+.doc-page{background:#fbfcff;color:#263248;border-color:rgba(255,255,255,.35);box-shadow:0 15px 35px rgba(0,0,0,.2)}
+.doc-page p{color:#7a8598}.doc-page h3{color:#24324a}
+.doc-top{border-bottom-color:#e8ebf2}.doc-top strong{color:#24324a}.doc-logo{background:#e9edff;color:#5669dc}
+.bottom-grid .info-card{color:#eef3ff}.metric{color:#f6f8ff}.progress{background:rgba(255,255,255,.1)}
+.atlas-processing-card{background:rgba(17,26,48,.88)!important;color:#f3f6ff!important;border:1px solid rgba(190,207,255,.2)!important;box-shadow:0 20px 70px rgba(0,0,0,.4)!important;backdrop-filter:blur(20px)}
+.atlas-processing-card p{color:#aab7d1!important}.atlas-spinner{border-color:rgba(180,190,255,.18);border-top-color:#a8b2ff}
+button,input{accent-color:#8c9aff}
+input{background:rgba(255,255,255,.07);border-color:rgba(190,207,255,.2);color:#f1f5ff}
+::selection{background:rgba(131,146,255,.38);color:white}
+@media(max-width:1100px){.main{grid-template-columns:190px minmax(0,1fr)}.source-panel{grid-column:1/-1}}
+@media(max-width:760px){.topbar{padding:0 14px;gap:12px}.brand{min-width:0}.workspace{display:none}.main{display:flex;flex-direction:column;padding:12px}.sidebar{order:0}.content{order:1}.detail{order:2}.source-panel{order:3}.graph-panel{min-height:470px}.graph-wrap{min-height:350px}.bottom-grid{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+
+/* Topic research controls */
+.research-card{border:1px solid rgba(190,207,255,.18);border-radius:16px;padding:16px;background:linear-gradient(135deg,rgba(105,122,255,.13),rgba(58,206,193,.07));backdrop-filter:blur(18px);box-shadow:0 12px 35px rgba(0,0,0,.12)}
+.research-title{font-size:13px;font-weight:800;color:#f1f5ff;margin-bottom:4px}.research-help{font-size:11px;color:#a5b2cb;line-height:1.5;margin-bottom:11px}.research-row{display:flex;gap:8px}.research-row input{min-width:0;flex:1;border:1px solid rgba(190,207,255,.22);border-radius:10px;padding:11px 12px;background:rgba(8,14,29,.55);color:#f1f5ff;outline:none}.research-row input:focus{border-color:#9aa7ff}.research-row button{white-space:nowrap}.research-status{font-size:10px;color:#a5b2cb;margin-top:9px;min-height:14px}.research-sources{font-size:10px;color:#a5b2cb;margin-top:8px;line-height:1.5}.research-sources a{color:#aeb9ff}
+@media(max-width:800px){.research-row{flex-direction:column}.research-row button{width:100%}}
+
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+  <div class="brand"><div class="logo">✳</div>Qarbi AI<span style="color:#8a95a8;font-weight:500">/ knowledge</span></div>
+  <div class="workspace"><strong>Learning workspace</strong>Personal knowledge base</div>
+  <div class="top-actions"><button class="pill" id="searchBtn">⌕ &nbsp; Search topics</button><button class="pill" id="shareBtn">↗ Share</button><div class="avatar">A</div></div>
+</header>
+<main class="main">
+  <aside class="sidebar">
+    <div><div class="side-label">Workspace</div>
+      <div class="nav-item active"><span class="nav-ico">◈</span>Knowledge graph</div>
+      <div class="nav-item" id="sourceNav"><span class="nav-ico">▤</span>Source documents</div>
+      <div class="nav-item" id="savedNav"><span class="nav-ico">☆</span>Saved topics</div>
+      <div class="nav-item" id="historyNav"><span class="nav-ico">◷</span>Exploration history</div>
+    </div>
+    <div><div class="side-label">Current source</div>
+      <div class="source-card"><div class="source-thumb">🤖</div><strong id="sideFileName">Qarbi AI Sample Notes.txt</strong><small id="sideFileMeta">Page 1 · Sample document</small><div class="mini-status"><span class="dot"></span> Graph generated</div></div>
+    </div>
+    <div style="margin-top:auto"><div class="side-label">Learning mode</div>
+      <div class="nav-item active" id="freeMode"><span class="nav-ico">✦</span>Free exploration</div>
+      <div class="nav-item" id="guidedMode"><span class="nav-ico">➜</span>Guided learning</div>
+      <div style="padding:8px 10px;color:#9aa4b4;font-size:10px;line-height:1.5">Your graph grows as you explore. Start with the overview, then follow your curiosity.</div>
+    </div>
+  </aside>
+  <section class="content">
+    <div class="page-heading"><div><div class="eyebrow">Your knowledge space</div><h1>Explore your knowledge</h1><div class="sub">A connected map of the ideas inside your documents.</div></div><button class="btn primary" id="uploadTop">＋ Add a source</button></div>
+    <section class="research-card" id="researchCard">
+      <div class="research-title">✦ Research any topic</div>
+      <div class="research-help">Enter anything: a person, company, technology, scientific concept, place, event, product, question, or a college. Qarbi AI will research available web sources and build a connected, expandable knowledge graph. You can still upload documents below.</div>
+      <div class="research-row"><input id="researchQuery" type="text" placeholder="e.g. Rajasthan Technical University — courses, branches, fees…" maxlength="500"/><button class="btn primary" id="researchBtn" type="button">✦ Research & build graph</button></div>
+      <div class="research-status" id="researchStatus">Research and deeper node expansion require the Qarbi AI backend and a Gemini model with Google Search grounding.</div>
+      <div class="research-sources" id="researchSources"></div>
+    </section>
+    <div class="graph-panel">
+      <div class="panel-head"><div><h2>Knowledge Map</h2><div class="sub">Topic overview · Click a node to explore</div></div><div class="head-right"><select class="layout-select" id="layoutSelect" aria-label="Graph layout"><option value="free">Free / draggable</option><option value="tree">Tree (top-down)</option><option value="horizontal">Tree (left-right)</option><option value="radial">Radial</option></select><button class="tiny-btn" id="fitBtn">⤢ Fit graph</button><button class="tiny-btn" id="expandAll">＋ Expand</button></div></div>
+      <div class="legend"><span><i style="background:#596df1"></i>Main topic</span><span><i style="background:#20a89a"></i>Components</span><span><i style="background:#d88a28"></i>Concepts</span><span><i style="background:#8b63d9"></i>Resources</span></div>
+      <div class="graph-wrap" id="graphWrap"><svg id="graph" viewBox="0 0 720 500" role="img" aria-label="Interactive topic graph"></svg></div>
+      <div class="graph-foot"><span><strong id="nodeCount">0 topics</strong> · <span id="edgeCount">0 connections</span></span><span>Drag to pan · Click a node to inspect</span></div>
+    </div>
+    <div class="bottom-grid">
+      <div class="info-card"><h3>Knowledge coverage</h3><div class="metric-row"><div class="metric" id="coverageNum">72%</div><div class="metric-note">of key ideas mapped<br/>in this sample</div></div><div class="progress"><span id="coverageBar"></span></div></div>
+      <div class="info-card"><h3>Recent exploration</h3><div class="activity"><span style="color:#596df1">●</span><span id="recentActivity"><b>Core concept</b> · Opened just now</span></div><div class="activity"><span style="color:#20a89a">●</span><span><b>Controller</b> · Source-linked concept</span></div></div>
+    </div>
+  </section>
+  <aside class="detail">
+    <div class="detail-tabs"><button class="detail-tab active" data-panel="topicTab">◈ Topic details</button><button class="detail-tab" data-panel="chatTab">✦ Ask AI</button></div>
+    <div class="detail-view active" id="topicTab">
+      <div class="detail-top"><div class="detail-kicker" id="detailKicker">Selected topic · Component</div><div class="detail-title-row"><div class="detail-icon" id="detailIcon">📡</div><div><h2 id="detailTitle">Core concept</h2><div id="detailTags"><span class="tag">Hardware</span><span class="tag">Distance sensing</span></div></div></div><p id="detailDesc">The source estimates relationship by sending an concept pulse and measuring how long its echo takes to return.</p></div>
+      <div class="detail-section"><div class="section-title">Source evidence <span style="color:#9aa4b4;font-weight:500">1 reference</span></div><div class="source-ref"><div class="ref-icon">▤</div><div><strong id="sourceRefTitle">Sample source document</strong><small id="sourceRefMeta">Sample document · Page 1 · Highlighted</small></div><span class="confidence" id="evidenceStatus">Extracted</span></div><div style="font-size:10px;color:#8b96a8;line-height:1.5" id="evidenceNote">This topic is linked to the corresponding region in the source preview.</div></div>
+      <div class="detail-section"><div class="section-title">Connected topics <span id="relatedCount" style="color:#9aa4b4;font-weight:500">3 related</span></div><div class="related" id="relatedTopics"></div></div>
+      <div class="detail-section"><div class="section-title">Example in simple words</div><div class="example-card"><strong id="exampleTitle">Think of it like an echo</strong><p id="exampleText">Imagine clapping in a large empty room. The time it takes for the echo to return gives a clue about how far away the wall is.</p></div><div class="example-card"><strong>Try this next</strong><p id="practiceText">Explore the key relationship, then compare a source reading with a ruler-measured relationship.</p></div></div>
+      <div class="detail-section"><div class="section-title">Explore this topic</div><div style="font-size:11px;color:#778397;margin-bottom:10px">Choose the depth that matches your curiosity.</div><div class="related"><button data-depth="overview">◎ Overview</button><button data-depth="deeper">↘ Understand deeper</button><button data-depth="practice">⚒ Put into practice</button></div></div>
+      <div class="learn-actions"><button class="btn primary" id="expandSelected">Explore further ↗</button><button class="btn secondary" id="openChatFromTopic">✦ I still have a question</button></div>
+    </div>
+    <div class="detail-view" id="chatTab">
+      <div class="chat-header"><div class="chat-header-row"><div class="bot-avatar">✦</div><div><strong>Qarbi AI learning assistant</strong><small>Explains the selected topic in a different way</small></div></div><div class="chat-context">◈ <span>Context: <b id="chatContextName">Core concept</b> and its connected topics</span></div></div>
+      <div class="chat-messages" id="chatMessages"><div class="message bot"><span class="msg-label">Qarbi AI · Example</span>Hi! I can explain this topic more simply, give an analogy, walk through an example, or help you understand a connected concept. What would you like to know?</div></div>
+      <div class="quick-asks" id="quickAsks"><button data-question="Explain this like I'm a beginner.">Explain simply</button><button data-question="Give me a real-life example.">Real-life example</button><button data-question="Explain the steps one by one.">Step by step</button><button data-question="What should I learn next?">What next?</button></div>
+      <div class="chat-compose"><textarea id="chatInput" rows="2" placeholder="Ask a question about this topic…"></textarea><button class="send-btn" id="sendChat" aria-label="Send question">➤</button></div><div class="chat-note">Ask questions about the selected topic. Qarbi AI connects to your local backend for AI answers when it is running.</div>
+    </div>
+  </aside>
+</main>
+</div>
+<div class="toast" id="toast"></div>
+<div class="modal-backdrop" id="modalBackdrop"><div class="modal"><h2 id="modalTitle">Ask about this topic</h2><p id="modalDesc">Your question will be answered using the selected topic and its visible source context in this prototype.</p><textarea id="questionInput" placeholder="What would you like to understand?"></textarea><div class="modal-actions"><button class="btn secondary" id="modalCancel">Cancel</button><button class="btn primary" id="modalSubmit">Explore answer</button></div></div></div>
+<input id="fileInput" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.txt,.md" style="display:none" />
+<script>
+const topics = {};
+let selected=null, visible=new Set(), expanded=new Set(), history=[], saved=new Set(), guided=false, pan={x:0,y:0};
+let graphLayout="free", activeDrag=null, suppressNodeClick=false;
+const svg=document.getElementById('graph');
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2300)}
+function edges(){let out=[];visible.forEach(id=>{let t=topics[id];if(t.parent&&visible.has(t.parent))out.push([t.parent,id]);if(expanded.has(id))t.children.forEach(c=>{if(visible.has(c))out.push([id,c])})});return [...new Map(out.map(e=>[e.join('-'),e])).values()]}
+function renderGraph(){
+ const ns=[...visible].map(id=>topics[id]).filter(Boolean);
+ if(ns.length===0){
+   svg.innerHTML='';
+   svg.setAttribute('aria-label','Empty knowledge graph. Upload a document to begin.');
+   document.getElementById('nodeCount').textContent='0 topics';
+   document.getElementById('edgeCount').textContent='0 connections';
+   const wrap=svg.parentElement;
+   let empty=wrap.querySelector('.atlas-empty-state');
+   if(!empty){empty=document.createElement('div');empty.className='atlas-empty-state';empty.innerHTML='<div style="font-size:32px;margin-bottom:10px">＋</div><strong>No knowledge map yet</strong><p>Upload a document or image to create your first knowledge map.</p><button class="btn primary" id="emptyUploadBtn" type="button">＋ Upload a document</button>';wrap.appendChild(empty);document.getElementById('emptyUploadBtn').addEventListener('click',()=>document.getElementById('fileInput').click());}
+   return;
+ }
+ const oldEmpty=svg.parentElement.querySelector('.atlas-empty-state');if(oldEmpty)oldEmpty.remove();
+ let html='';
+ edges().forEach(([a,b])=>{let A=topics[a],B=topics[b];let x1=A.x,y1=A.y,x2=B.x,y2=B.y;let dx=x2-x1,dy=y2-y1;let d=Math.sqrt(dx*dx+dy*dy)||1;let sx=x1+dx/d*(A.w*.32),sy=y1+dy/d*(A.h*.32),ex=x2-dx/d*(B.w*.32),ey=y2-dy/d*(B.h*.32);html+=`<path class="edge ${a===selected||b===selected?'active':''}" d="M ${sx} ${sy} Q ${(sx+ex)/2} ${(sy+ey)/2-8} ${ex} ${ey}"/>`});
+ ns.forEach(t=>{let x=t.x-t.w/2,y=t.y-t.h/2;let isSel=t.id===selected, isExpanded=expanded.has(t.id),hasKids=t.children.length>0;html+=`<g class="node ${isSel?'selected':''} ${t.root?'root':''} ${hasKids&&!isExpanded?'collapsed':''}" data-id="${t.id}" tabindex="0" role="button" aria-label="Explore ${t.label}"><rect class="node-box" x="${x}" y="${y}" width="${t.w}" height="${t.h}" rx="11"/><text class="n-icon" x="${x+12}" y="${y+23}">${t.icon}</text><text class="n-title" x="${x+34}" y="${y+21}">${escapeXml(t.label.length>17?t.label.slice(0,16)+'…':t.label)}</text><text class="n-sub" x="${x+34}" y="${y+37}">${escapeXml(t.type)}</text>${hasKids?`<circle cx="${x+t.w-11}" cy="${y+11}" r="7" fill="${t.root?'#ffffff33':'#edf0ff'}"/><text x="${x+t.w-11}" y="${y+14}" text-anchor="middle" font-size="10" fill="${t.root?'white':'#5968d7'}" font-weight="800">${isExpanded?'−':'+'}</text>`:''}</g>`});
+ svg.innerHTML=html;svg.querySelectorAll('.node').forEach(g=>{g.addEventListener('pointerdown',startNodeDrag);g.addEventListener('click',()=>{if(suppressNodeClick){suppressNodeClick=false;return}selectNode(g.dataset.id)});g.addEventListener('dblclick',e=>{e.preventDefault();expandNode(g.dataset.id)});g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectNode(g.dataset.id)}})});
+ document.getElementById('nodeCount').textContent=`${visible.size} topics`;document.getElementById('edgeCount').textContent=`${edges().length} connections`;
+}
+function escapeXml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]))}
+function selectNode(id){if(!topics[id])return;selected=id;history.unshift(id);history=[...new Set(history)].slice(0,8);let t=topics[id];document.getElementById('detailKicker').textContent=`Selected topic · ${t.type}`;document.getElementById('detailIcon').textContent=t.icon;document.getElementById('detailTitle').textContent=t.label;document.getElementById('detailDesc').textContent=t.desc;document.getElementById('detailTags').innerHTML=t.tags.map(x=>`<span class="tag">${escapeXml(x)}</span>`).join('');document.getElementById('sourceRefTitle').textContent=t.source;document.getElementById('sourceRefMeta').textContent=`${document.getElementById('sideFileName').textContent} · ${t.page}`;let stat=t.evidence;document.getElementById('evidenceStatus').textContent=stat;document.getElementById('evidenceStatus').style.color=stat==='Inferred'?'#9a671e':stat==='Suggested'?'#7754c8':'#168777';document.getElementById('evidenceStatus').style.background=stat==='Inferred'?'#fff2dd':stat==='Suggested'?'#f1eaff':'#e7f7f2';document.getElementById('evidenceNote').textContent=stat==='Extracted'?'Extracted from the sample source and linked to its corresponding region.':stat==='Sample'?'Sample overview topic. In a real upload, this panel would cite exact page regions.':stat==='Suggested'?'Suggested extension for further study; not asserted as a fact in the uploaded source.':'AI-added conceptual expansion. Verify against the exact hardware and source before implementation.';let rel=new Set([...(t.parent?[t.parent]:[]),...t.children]);if(t.id==='root')rel=new Set(t.children);document.getElementById('relatedCount').textContent=`${rel.size} related`;document.getElementById('relatedTopics').innerHTML=[...rel].filter(x=>topics[x]).map(x=>`<button data-topic="${x}">${escapeXml(topics[x].label)}</button>`).join('')||'<span style="font-size:10px;color:#98a2b3">No connected topics yet.</span>';document.getElementById('relatedTopics').querySelectorAll('button').forEach(b=>b.onclick=()=>selectNode(b.dataset.topic));document.getElementById('recentActivity').innerHTML=`<b>${escapeXml(t.label)}</b> · Opened just now`;document.getElementById('coverageNum').textContent=`${Math.min(98,Math.round(45+visible.size*3.4))}%`;document.getElementById('coverageBar').style.width=document.getElementById('coverageNum').textContent;renderGraph();renderSource()}
+function expandNode(id){let t=topics[id];if(!t||!t.children.length){toast('No deeper branch was returned for this topic. Try asking Qarbi AI in chat for more detail.');return}if(expanded.has(id)){expanded.delete(id);t.children.forEach(c=>{if(topics[c].parent===id)hideBranch(c)})}else{expanded.add(id);t.children.forEach(c=>visible.add(c))}applyGraphLayout();selectNode(id);toast(expanded.has(id)?`Expanded ${t.label}`:`Collapsed ${t.label}`)}
+function hideBranch(id){if(!topics[id])return;visible.delete(id);if(expanded.has(id))expanded.delete(id);topics[id].children.forEach(hideBranch)}
+function renderSource(){document.querySelectorAll('.highlight').forEach(el=>el.classList.toggle('chosen',el.dataset.topic===selected))}
+function expandSelected(){let t=topics[selected];if(t.children.length){if(!expanded.has(selected)){expanded.add(selected);t.children.forEach(c=>visible.add(c));applyGraphLayout();selectNode(selected);toast(`Added ${t.children.length} related topics`)}else{toast('This branch is already expanded. Click a new node to keep exploring.')}}else{toast('This is a leaf topic in the demo. Add a source to grow the knowledge map.')}}
+document.getElementById('expandSelected').onclick=expandSelected;
+document.getElementById('expandAll').onclick=()=>{[...visible].forEach(id=>{if(topics[id].children.length){expanded.add(id);topics[id].children.forEach(c=>visible.add(c))}});applyGraphLayout();selectNode(selected);toast('Expanded all currently visible branches')};
+document.getElementById('fitBtn').onclick=()=>{svg.setAttribute('viewBox','0 0 720 500');toast('Graph fitted to view')};
+document.getElementById('layoutSelect').addEventListener('change',e=>{graphLayout=e.target.value;applyGraphLayout();renderGraph();toast('Layout changed to '+e.target.options[e.target.selectedIndex].text)});
+function applyGraphLayout(){
+ const ids=[...visible].filter(id=>topics[id]);if(!ids.length)return;const root=ids.find(id=>topics[id].root)||ids.find(id=>!topics[id].parent)||ids[0];
+ if(graphLayout==='free')return;
+ if(graphLayout==='radial'){const levels={};const depth={};ids.forEach(id=>{let cur=topics[id],d=0,seen=new Set();while(cur&&cur.parent&&topics[cur.parent]&&!seen.has(cur.id)){seen.add(cur.id);d++;cur=topics[cur.parent]}depth[id]=d;(levels[d]??=[]).push(id)});Object.keys(levels).forEach(k=>{const d=+k,arr=levels[k],r=d===0?0:Math.min(205,75+d*58);arr.forEach((id,i)=>{const a=-Math.PI/2+i*2*Math.PI/arr.length;topics[id].x=360+Math.cos(a)*r;topics[id].y=250+Math.sin(a)*r*.72})});return}
+ const children=id=>ids.filter(x=>topics[x].parent===id);const leaves=id=>{const c=children(id);return c.length?c.reduce((n,x)=>n+leaves(x),0):1};let cursor=0;const place=(id,depth)=>{const t=topics[id],c=children(id);if(graphLayout==='tree'){if(!c.length){t.x=45+cursor*630/Math.max(1,ids.length-1);cursor++;}else{c.forEach(x=>place(x,depth+1));t.x=c.reduce((sum,x)=>sum+topics[x].x,0)/c.length;}t.y=45+depth*105;}else{t.x=55+depth*150;if(!c.length){t.y=35+cursor*430/Math.max(1,ids.length-1);cursor++;}else{c.forEach(x=>place(x,depth+1));t.y=c.reduce((sum,x)=>sum+topics[x].y,0)/c.length;}}};place(root,0);
+}
+function svgPoint(e){const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(svg.getScreenCTM().inverse())}
+function startNodeDrag(e){if(e.button!==0)return;e.stopPropagation();const id=e.currentTarget.dataset.id;const p=svgPoint(e);activeDrag={id,startX:p.x,startY:p.y,nodeX:topics[id].x,nodeY:topics[id].y,moved:false,el:e.currentTarget};activeDrag.el.setPointerCapture?.(e.pointerId);svg.addEventListener('pointermove',moveNodeDrag);svg.addEventListener('pointerup',endNodeDrag,{once:true});svg.addEventListener('pointercancel',endNodeDrag,{once:true})}
+function moveNodeDrag(e){if(!activeDrag)return;const p=svgPoint(e),dx=p.x-activeDrag.startX,dy=p.y-activeDrag.startY;if(Math.abs(dx)+Math.abs(dy)>2)activeDrag.moved=true;activeDrag.el.setAttribute('transform',`translate(${dx} ${dy})`)}
+function endNodeDrag(e){if(!activeDrag)return;const drag=activeDrag,p=svgPoint(e),dx=p.x-drag.startX,dy=p.y-drag.startY;svg.removeEventListener('pointermove',moveNodeDrag);svg.removeEventListener('pointerup',endNodeDrag);svg.removeEventListener('pointercancel',endNodeDrag);if(drag.moved){topics[drag.id].x=Math.max(35,Math.min(685,drag.nodeX+dx));topics[drag.id].y=Math.max(30,Math.min(470,drag.nodeY+dy));suppressNodeClick=true;renderGraph();if(typeof saveGraph==='function')saveGraph();}}
+
+// Removed obsolete askBtn handler: no element with id="askBtn" exists.
+document.getElementById('modalCancel').onclick=()=>document.getElementById('modalBackdrop').classList.remove('open');
+document.getElementById('modalSubmit').onclick=()=>{let q=document.getElementById('questionInput').value.trim();document.getElementById('modalBackdrop').classList.remove('open');if(q)toast(`Demo question saved for “${topics[selected].label}”`);else toast('Enter a question first')};
+document.querySelectorAll('[data-depth]').forEach(b=>b.onclick=()=>{let d=b.dataset.depth;toast(d==='overview'?'Overview mode: showing the key idea.':d==='deeper'?'Deeper mode: expand connected concepts.':'Practice mode: practical steps can be generated when AI is connected.')});
+document.getElementById('searchBtn').onclick=()=>{let q=prompt('Search topics in this knowledge graph:');if(!q)return;let hit=Object.values(topics).find(t=>t.label.toLowerCase().includes(q.toLowerCase()));if(hit){let cur=hit;while(cur.parent){visible.add(cur.parent);expanded.add(cur.parent);cur=topics[cur.parent]}visible.add(hit.id);selectNode(hit.id);toast(`Found ${hit.label}`)}else toast('No matching topic in this sample graph.')};
+document.getElementById('shareBtn').onclick=()=>{let summary=`Qarbi AI knowledge graph — ${topics[selected].label}\n${topics[selected].desc}`;if(navigator.clipboard)navigator.clipboard.writeText(summary).then(()=>toast('Topic summary copied')).catch(()=>toast('Share preview: '+topics[selected].label));else toast('Share preview: '+topics[selected].label)};
+document.getElementById('uploadTop').onclick=()=>document.getElementById('fileInput').click();
+if(document.getElementById('uploadTop'))document.getElementById('uploadTop').style.display='';
+document.getElementById('fileInput').onchange=e=>{let f=e.target.files[0];if(!f)return;document.getElementById('sideFileName').textContent=f.name;document.getElementById('sideFileMeta').textContent=`${(f.size/1024).toFixed(0)} KB · Local demo upload`;toast('File selected. Real PDF/image extraction needs a backend connection.');document.querySelector('.source-thumb').textContent=f.type.startsWith('image/')?'🖼️':'📄';};
+document.getElementById('sourceNav').onclick=()=>toast('Source viewer is shown in the sample layout.');
+document.getElementById('savedNav').onclick=()=>{saved.add(selected);toast(`Saved ${topics[selected].label}`)};
+document.getElementById('historyNav').onclick=()=>toast('Recent topics: '+history.map(id=>topics[id].label).join(' → '));
+document.getElementById('guidedMode').onclick=()=>{guided=true;document.getElementById('guidedMode').classList.add('active');document.getElementById('freeMode').classList.remove('active');toast('Guided mode: start at the main topic, then follow its components.')};
+document.getElementById('freeMode').onclick=()=>{guided=false;document.getElementById('freeMode').classList.add('active');document.getElementById('guidedMode').classList.remove('active');toast('Free exploration enabled.')};
+document.querySelectorAll('.highlight').forEach(el=>el.addEventListener('click',()=>selectNode(el.dataset.topic)));
+function fileUploadBlock(){}
+// Make the source viewer a source-linked mini diagram with clickable regions.
+renderGraph();
+
+
+// Contextual topic examples and prototype chatbot (live AI is not connected yet)
+const topicExtras={root:['Think of a team','A system is like a small team: the source notices, the controller thinks, and the motors act.','Trace the flow from sensing an obstacle to choosing a movement.'],controller:['Think of it as the system’s brain','The source gives information, and Controller runs instructions that decide what the system should do next.','Explore the board and pins, then identify inputs and outputs.'],source:['Think of it like an echo','Imagine clapping in a large empty room. The time it takes for the echo to return gives a clue about how far away the wall is.','Explore the key relationship, then compare a source reading with a ruler-measured relationship.'],logic:['Think of an if/then rule','If the obstacle is closer than a chosen limit, then the system turns. Otherwise, it keeps moving.','Try changing the relationship threshold in a small test program.'],board:['Think of ports on a computer','Pins are connection points that let the board read signals or send commands to other components.','Check the exact board pinout and voltage requirements before wiring.'],code:['Think of a repeated checklist','The program keeps repeating: measure, decide, act, then measure again.','Write pseudocode first, then translate each step into a small sketch.'],pins:['Think of a message path','A signal pin is a path for information between the controller and another component.','Draw each connection and label its purpose before powering the circuit.'],echo:['Think of a ball bouncing off a wall','The sound pulse travels to an object and back. The source measures the round-trip time.','Compare echo times at different relationships.'],relationship:['Why divide by two?','The sound travels out and back. Dividing by two estimates the one-way relationship to the obstacle.','Use a known relationship and echo time, then compare with a ruler.'],limits:['Measurements are estimates','A soft or angled surface may reflect sound away from the source, so the echo can be weak or missing.','Test several target materials and angles; record readings and outliers.'],threshold:['Think of a safety line','A threshold is a cutoff. If the measured relationship crosses it, the system changes behavior.','Test thresholds safely and account for speed and stopping relationship.'],movement:['Think of a driver following directions','The controller decides what should happen; the motor driver helps deliver the power needed to move the motors.','Verify motor direction with wheels lifted before testing on the floor.']};
+const previousSelectNode=selectNode;
+selectNode=function(id){previousSelectNode(id);const t=topics[id];if(!t)return;const ex=topicExtras[id]||topicExtras.root;document.getElementById('exampleTitle').textContent=ex[0];document.getElementById('exampleText').textContent=ex[1];document.getElementById('practiceText').textContent=ex[2];document.getElementById('chatContextName').textContent=t.label;};
+function switchDetailPanel(panel){document.querySelectorAll('.detail-tab').forEach(b=>b.classList.toggle('active',b.dataset.panel===panel));document.querySelectorAll('.detail-view').forEach(v=>v.classList.toggle('active',v.id===panel));if(panel==='chatTab')setTimeout(()=>document.getElementById('chatInput').focus(),50)}
+document.querySelectorAll('.detail-tab').forEach(b=>b.addEventListener('click',()=>switchDetailPanel(b.dataset.panel)));document.getElementById('openChatFromTopic').onclick=()=>switchDetailPanel('chatTab');
+function addMessage(kind,label,text){const box=document.createElement('div');box.className='message '+kind;const lbl=document.createElement('span');lbl.className='msg-label';lbl.textContent=label;const body=document.createElement('span');body.textContent=text;box.append(lbl,body);const messages=document.getElementById('chatMessages');messages.appendChild(box);messages.scrollTop=messages.scrollHeight}
+function demoAnswer(q0){const t=topics[selected],q=q0.toLowerCase(),ex=topicExtras[selected]||topicExtras.root;if(q.includes('example')||q.includes('real-life'))return ex[1]+'\n\nIn this sample document, that means: '+t.desc;if(q.includes('step')||q.includes('one by one'))return 'Here is the idea step by step:\n1. Identify what this topic does: '+t.desc+'\n2. Follow its connection to the other components.\n3. Test the idea with the real hardware or a small example.\n\nThis is a learning explanation for the sample graph, not a diagnosis of your exact circuit.';if(q.includes('next')||q.includes('learn next'))return 'A useful next step is to explore '+(t.children.length?t.children.map(id=>topics[id].label).join(', '):t.parent?topics[t.parent].label:'the main system')+'. Click a connected topic to switch the chat context.';if(q.includes('formula')||q.includes('calculate')||selected==='relationship')return 'For an concept relationship estimate, relationship ≈ speed of sound × echo time ÷ 2. The divide-by-two accounts for the pulse travelling to the obstacle and back. Use consistent units and validate against a known relationship.';if(q.includes('simple')||q.includes('beginner')||q.includes('understand'))return ex[1]+'\n\nIn short: '+t.desc;return 'Let’s break down “'+t.label+'”.\n\n'+t.desc+'\n\nAn easy way to picture it: '+ex[1]+'\n\nYou can ask for a simpler explanation, a real-life example, a step-by-step walkthrough, or what to learn next. This sample response is not connected to live AI or your uploaded files.'}
+function sendChat(){const input=document.getElementById('chatInput'),q=input.value.trim();if(!q)return;addMessage('user','You',q);input.value='';setTimeout(()=>addMessage('bot','Qarbi AI · '+topics[selected].label,demoAnswer(q)),180)}
+document.getElementById('sendChat').onclick=sendChat;document.getElementById('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat()}});document.querySelectorAll('#quickAsks button').forEach(b=>b.onclick=()=>{document.getElementById('chatInput').value=b.dataset.question;sendChat()});
+
+</script>
+</body>
+</html><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+/* Qarbi AI v3 additions */
+:root{--atlas-focus:#5368e8}.topbar{backdrop-filter:blur(12px)}.upload-zone{cursor:pointer}.source-text-view{white-space:pre-wrap;overflow-wrap:anywhere;font-size:11px;line-height:1.8;color:#526176;max-height:560px;overflow:auto}.source-text-view mark{background:#fff0bd;border-radius:3px;padding:1px 2px}.status-line{display:flex;gap:7px;align-items:center;padding:8px 10px;background:#f4f6ff;border-radius:8px;color:#5666c8;font-size:10px;margin-bottom:10px}.status-line .dot{background:#5368e8}.graph-tools{display:flex;gap:6px;flex-wrap:wrap}.tiny-btn:focus-visible,.btn:focus-visible,button:focus-visible{outline:2px solid #7d8aed;outline-offset:2px}.detail-view{min-height:0}.detail{max-height:calc(100vh - 100px)}.chat-messages{overflow:auto}.source-panel{min-height:500px}.api-indicator{font-size:10px;color:#768398;display:inline-flex;align-items:center;gap:5px}.api-indicator i{width:6px;height:6px;border-radius:50%;background:#d9a13d;display:inline-block}.api-indicator.live i{background:#20a89a}.empty-hint{padding:20px;text-align:center;color:#8b96a8;font-size:11px}@media(max-width:1100px){.main{grid-template-columns:190px minmax(350px,1fr)}.detail{grid-column:1/-1;max-height:none;min-height:500px}}@media(max-width:720px){.topbar{padding:0 12px;gap:8px}.brand{min-width:0}.workspace{display:none}.main{display:flex;flex-direction:column;padding:10px}.sidebar{display:none}.graph-panel{min-height:470px}.detail{min-height:480px}.bottom-grid{grid-template-columns:1fr}.top-actions .pill{padding:8px}.source-content{min-height:240px}}
+
+.atlas-processing{position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.93);backdrop-filter:blur(3px);border-radius:12px;min-height:240px}.atlas-processing-card{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;padding:26px;max-width:330px;color:#24324a}.atlas-spinner{width:42px;height:42px;border:4px solid #e6eaff;border-top-color:#596df1;border-radius:50%;animation:atlas-spin .8s linear infinite}.atlas-processing-card strong{font-size:15px}.atlas-processing-card p{font-size:12px;color:#758198;line-height:1.5;margin:0}@keyframes atlas-spin{to{transform:rotate(360deg)}}.graph-panel,.graph-wrap{position:relative}
+</style>
+<script>
+// Qarbi AI v3: real local text extraction, optional backend integration, graph export and browser persistence.
+(function(){
+ const API_BASE = (localStorage.getItem('atlas_api_base') || 'http://127.0.0.1:8000').replace(/\/$/,'');
+ let currentDocText = '', currentDocName = 'Knowledge Map — sample notes', currentDocPages = [], currentDocId = null;
+ const chatHistory = [];
+ const originalTopics = JSON.parse(JSON.stringify(topics));
+ const baseKeys = Object.keys(originalTopics);
+ const setStatus = (text,live=false)=>{let el=document.getElementById('atlasStatus');if(!el){el=document.createElement('div');el.id='atlasStatus';el.className='api-indicator';document.querySelector('.top-actions').insertBefore(el,document.querySelector('.avatar'));}el.className='api-indicator'+(live?' live':'');el.innerHTML='<i></i>'+escapeXml(text)};
+ setStatus('Local demo mode');
+ function showProcessing(show,title='Analyzing your source',detail='Extracting text and building your knowledge graph…'){
+   const wrap=document.getElementById('graph').parentElement;
+   let el=wrap.querySelector('.atlas-processing');
+   if(show){
+     if(!el){el=document.createElement('div');el.className='atlas-processing';el.innerHTML='<div class="atlas-processing-card"><div class="atlas-spinner" aria-hidden="true"></div><strong class="atlas-processing-title"></strong><p class="atlas-processing-detail"></p></div>';wrap.appendChild(el)}
+     el.querySelector('.atlas-processing-title').textContent=title;el.querySelector('.atlas-processing-detail').textContent=detail;el.style.display='flex';
+   }else if(el){el.remove()}
+ }
+ function ensureSourcePanel(){
+   // Reuse the panel if present, but repair its children if this layout variant
+   // has an incomplete/older source panel.
+   let panel=document.querySelector('.source-panel');
+   if(!panel){
+     panel=document.createElement('section');
+     panel.className='source-panel';
+     const contentArea=document.querySelector('.content') || document.body;
+     contentArea.appendChild(panel);
+   }
+   if(!panel.querySelector('.source-toolbar')){
+     const toolbar=document.createElement('div');
+     toolbar.className='source-toolbar';
+     toolbar.innerHTML='<strong>Source document preview</strong><span class="tiny-btn" style="margin-left:auto">Extracted text</span>';
+     panel.prepend(toolbar);
+   }
+   if(!panel.querySelector('.source-content')){
+     const content=document.createElement('div');
+     content.className='source-content';
+     panel.appendChild(content);
+   }
+   return panel;
+ }
+ function setSourceText(text,name,sourceLabel){
+   currentDocText=text;currentDocName=name;
+   const sideName=document.getElementById('sideFileName');if(sideName)sideName.textContent=name;
+   const sideMeta=document.getElementById('sideFileMeta');if(sideMeta)sideMeta.textContent=`${(new Blob([text]).size/1024).toFixed(1)} KB · ${sourceLabel}`;
+   const thumb=document.querySelector('.source-thumb');if(thumb)thumb.textContent='📄';
+   const panel=ensureSourcePanel();
+   const content=panel.querySelector('.source-content');
+   if(!content)throw new Error('Source preview panel could not be initialized.');
+   content.innerHTML='';
+   const page=document.createElement('div');page.className='doc-page';page.style.maxWidth='100%';page.innerHTML=`<div class="doc-top"><div class="doc-logo">✳</div><div><strong>${escapeXml(name)}</strong><small>Uploaded source · extracted text preview</small></div></div><div class="status-line"><span class="dot"></span>Text extraction complete · ${text.length.toLocaleString()} characters</div><div class="source-text-view"></div><div class="source-note">Source text preview · page/region citations depend on the parser</div>`;
+   const preview=page.querySelector('.source-text-view');preview.textContent=text.slice(0,16000)+(text.length>16000?'\n\n[Preview shortened. Full extracted text remains available to the active session.]':'');content.appendChild(page);
+   localStorage.setItem('atlas_last_doc',JSON.stringify({name,text:text.slice(0,50000),documentId:currentDocId,updated:Date.now()}));
+ }
+ function titleCase(s){return s.replace(/\b\w/g,c=>c.toUpperCase())}
+ function makeGraphFromTerms(terms,docName,summary){
+   // Replace demo graph with a source-specific graph. The root and topic records retain the schema used by the renderer.
+   Object.keys(topics).forEach(k=>delete topics[k]); visible.clear();expanded.clear();saved.clear();history=[];
+   const rootId='uploaded-root';topics[rootId]={id:rootId,label:docName.replace(/\.[^.]+$/,'').slice(0,25)||'Uploaded document',type:'Document',icon:'▤',x:360,y:250,w:164,h:54,desc:summary||'Knowledge map generated from the uploaded document. Select a topic to inspect extracted evidence.',tags:['Uploaded source','Knowledge map'],source:docName,page:'Extracted text',evidence:'Extracted',children:[],parent:null,color:'#5268e8',root:true};
+   const palette=['#20a89a','#596df1','#d88a28','#8b63d9','#3988c8'];const icons=['◇','∑','⚙','↗','⌘','◉','▦','✦'];
+   const cleaned=[];const seen=new Set();(terms||[]).forEach((item,i)=>{let label=typeof item==='string'?item:(item.label||item.name||item.term);if(!label)return;let key=label.toLowerCase().trim();if(!key||seen.has(key)||key===docName.toLowerCase())return;seen.add(key);cleaned.push(typeof item==='string'?{label,description:'Identified as a notable term in the uploaded source.',excerpt:'',evidence_status:'Heuristic extraction'}:item)});
+   if(!cleaned.length){const candidates=(currentDocText.match(/\b[A-Za-z][A-Za-z0-9+#.-]{3,}\b/g)||[]);candidates.slice(0,12).forEach(x=>{if(!seen.has(x.toLowerCase())){seen.add(x.toLowerCase());cleaned.push({label:titleCase(x),description:'Term identified in uploaded source.',excerpt:'',evidence_status:'Heuristic extraction'})}})}
+   const nodes=cleaned.slice(0,14);nodes.forEach((t,i)=>{const id='upload-topic-'+i;const angle=(-Math.PI/2)+(i/Math.max(nodes.length,1))*Math.PI*2;const radius=nodes.length>8?175:145;topics[id]={id,label:String(t.label).slice(0,34),type:t.type||'Topic',icon:icons[i%icons.length],x:360+Math.cos(angle)*radius,y:250+Math.sin(angle)*radius,w:Math.min(150,Math.max(104,String(t.label).length*6+47)),h:50,desc:t.description||'Topic identified in the uploaded document. Review the excerpt to understand the source context.',tags:[t.evidence_status||'Extracted',...(t.mentions?[`${t.mentions} mentions`]:[])],source:docName,page:t.page?`Page ${t.page}`:'Extracted text',evidence:'Extracted',excerpt:t.excerpt||'',confidence:t.confidence,children:[],parent:rootId,color:palette[i%palette.length]};topics[rootId].children.push(id)});
+   visible.add(rootId);topics[rootId].children.slice(0,6).forEach(id=>visible.add(id));expanded.add(rootId);selected=rootId;applyGraphLayout();renderGraph();selectNode(rootId);document.querySelector('.panel-head h2').textContent='Knowledge graph';document.querySelector('.panel-head .sub').textContent=`${nodes.length} extracted topics · Select a node to explore`;document.getElementById('nodeCount').textContent=`${visible.size} topics`;document.getElementById('edgeCount').textContent=`${visible.size-1} connections`;
+   const docNav=document.getElementById('sourceNav');if(docNav)docNav.onclick=()=>{const panel=document.querySelector('.source-panel');if(panel){panel.scrollIntoView({behavior:'smooth',block:'start'});toast('Showing uploaded source')}else toast('Upload a source to view its preview')};
+   saveGraph();
+ }
+ function saveGraph(){try{const data={topics,visible:[...visible],expanded:[...expanded],selected,currentDocName,currentDocId,currentDocText:currentDocText.slice(0,50000)};localStorage.setItem('atlas_graph_state',JSON.stringify(data));if(currentDocId){const edges=Object.values(topics).filter(t=>t.parent&&topics[t.parent]).map(t=>({source:t.parent,target:t.id,relationship:'RELATED_TO',evidence_status:t.evidence||'AI interpretation'}));fetch(API_BASE+'/api/documents/'+encodeURIComponent(currentDocId)+'/graph',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({topics:Object.values(topics),edges})}).catch(()=>{})}}catch(e){console.warn('Qarbi AI local save skipped',e)}}
+ function exportFile(filename,content,type){const blob=new Blob([content],{type});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+
+ // Multi-document library: keep each successfully processed document as its own workspace.
+ const DOC_HISTORY_KEY='atlas_documents_history_v1';
+ function readDocHistory(){try{return JSON.parse(localStorage.getItem(DOC_HISTORY_KEY)||'[]')}catch{return []}}
+ function writeDocHistory(items){try{localStorage.setItem(DOC_HISTORY_KEY,JSON.stringify(items.slice(0,30)))}catch(e){console.warn('Qarbi AI history storage limit reached',e)}}
+ function renderDocHistory(){
+   const nav=document.getElementById('historyNav');if(!nav)return;
+   let list=document.getElementById('atlasDocumentHistory');
+   if(!list){list=document.createElement('div');list.id='atlasDocumentHistory';list.style.cssText='display:none;margin:4px 0 10px 20px;border-left:1px solid #e1e6f0;padding-left:8px;';nav.parentElement.insertBefore(list,nav.nextSibling)}
+   const docs=readDocHistory();
+   list.innerHTML='';
+   if(!docs.length){const empty=document.createElement('div');empty.textContent='Uploaded documents will appear here';empty.style.cssText='padding:8px;color:#8b96a8;font-size:11px;line-height:1.4';list.appendChild(empty);return}
+   docs.forEach(doc=>{
+     const b=document.createElement('button');b.type='button';b.textContent='▤  '+doc.name;
+     b.title=doc.name;b.style.cssText='display:block;width:100%;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border:0;background:transparent;padding:8px 6px;border-radius:7px;color:#526176;font-size:11px;cursor:pointer';
+     b.onclick=()=>restoreDocument(doc.id);
+     list.appendChild(b);
+   });
+ }
+ function rememberCurrentDocument(){
+   const docs=readDocHistory();
+   const snap={id:currentDocId||('local-'+Date.now()+'-'+Math.random().toString(36).slice(2,7)),name:currentDocName,text:currentDocText.slice(0,50000),documentId:currentDocId,updated:Date.now(),topics:Object.values(topics),visible:[...visible],expanded:[...expanded],selected};
+   const next=[snap,...docs.filter(d=>d.name!==snap.name)];
+   writeDocHistory(next);renderDocHistory();
+ }
+ function restoreDocument(id){
+   const doc=readDocHistory().find(d=>d.id===id);if(!doc)return;
+   Object.keys(topics).forEach(k=>delete topics[k]);
+   (doc.topics||[]).forEach(t=>topics[t.id]=t);
+   visible.clear();(doc.visible||Object.keys(topics)).forEach(k=>visible.add(k));
+   expanded.clear();(doc.expanded||[]).forEach(k=>expanded.add(k));
+   selected=doc.selected||Object.keys(topics)[0]||null;
+   currentDocText=doc.text||'';currentDocName=doc.name||'Uploaded document';currentDocId=doc.documentId||null;
+   setSourceText(currentDocText,currentDocName,'History');
+   renderGraph();if(selected&&topics[selected])selectNode(selected);
+   const h2=document.querySelector('.panel-head h2'),sub=document.querySelector('.panel-head .sub');
+   if(h2)h2.textContent='Knowledge graph';if(sub)sub.textContent=`${Object.keys(topics).length-1} extracted topics · Select a node to explore`;
+   const count=document.getElementById('nodeCount');if(count)count.textContent=`${visible.size} topics`;
+   const edgesCount=document.getElementById('edgeCount');if(edgesCount)edgesCount.textContent=`${Math.max(0,visible.size-1)} connections`;
+   const top=document.getElementById('uploadTop');if(top)top.style.display='';
+   const list=document.getElementById('atlasDocumentHistory');if(list)list.style.display='block';
+   toast('Opened '+currentDocName);
+ }
+
+ // Web research mode: build a graph from a name or question, independent of uploads.
+ const researchBtn=document.getElementById('researchBtn'), researchInput=document.getElementById('researchQuery');
+ function makeResearchGraph(data,query){
+   const items=Array.isArray(data.topics)?data.topics:[];
+   Object.keys(topics).forEach(k=>delete topics[k]);visible.clear();expanded.clear();saved.clear();history=[];
+   currentDocName='Research: '+query;currentDocText=(data.summary||'Web research on '+query)+'\n\n'+(data.topics||[]).map(t=>t.label+': '+(t.description||'')).join('\n');currentDocId=null;
+   const rootId='research-root';topics[rootId]={id:rootId,label:String(query).slice(0,28),type:'Research topic',icon:'✦',x:360,y:250,w:Math.min(190,Math.max(140,String(query).length*6+48)),h:58,desc:data.summary||'Research overview generated from web sources. Select branches to explore more details.',tags:['Web research',`${items.length} findings`],source:'Web research',page:'Sources listed below',evidence:'Web researched',excerpt:data.summary||'',children:[],parent:null,color:'#5268e8',root:true};
+   const byLabel={};const normalized=items.slice(0,55).map((t,i)=>({...t,_i:i}));
+   normalized.forEach(t=>{const label=String(t.label||t.name||'').trim();if(label)byLabel[label.toLowerCase()]=t._i});
+   const depths={};
+   normalized.forEach((t,i)=>{let p=t.parent_label||t.parent||'';if(typeof p==='object')p=p.label||'';let pi=byLabel[String(p).toLowerCase()];if(pi===i)pi=undefined;t._parentIndex=pi;});
+   // Position each depth on a ring, with deeper branches progressively farther from the root.
+   normalized.forEach((t,i)=>{let depth=0,cur=t,seen=new Set([i]);while(cur._parentIndex!==undefined&&depth<6&&!seen.has(cur._parentIndex)){seen.add(cur._parentIndex);depth++;cur=normalized[cur._parentIndex]}t._depth=depth+1;});
+   const levelCounts={};normalized.forEach(t=>levelCounts[t._depth]=(levelCounts[t._depth]||0)+1);const levelIndex={};
+   const palette=['#20a89a','#596df1','#d88a28','#8b63d9','#3988c8','#cf6c91'];const icons=['◇','∑','⚙','↗','⌘','◉','▦','✦'];
+   normalized.forEach((t,i)=>{const label=String(t.label||t.name||'Finding').slice(0,50);const depth=t._depth;const ix=levelIndex[depth]||0;levelIndex[depth]=ix+1;const count=levelCounts[depth]||1;const angle=(-Math.PI/2)+(ix/Math.max(count,1))*Math.PI*2;const radius=depth===1?145:depth===2?225:Math.min(310,225+(depth-2)*35);let x=360+Math.cos(angle)*radius,y=250+Math.sin(angle)*Math.min(radius*.68,190);x=Math.max(65,Math.min(655,x));y=Math.max(38,Math.min(462,y));const id='research-topic-'+i;let parentId=rootId;if(t._parentIndex!==undefined)parentId='research-topic-'+t._parentIndex;
+     const sources=Array.isArray(t.sources)?t.sources:[];const sourceText=sources.map(s=>typeof s==='string'?s:(s.title||s.url||'')).filter(Boolean).slice(0,3).join(' · ');
+     topics[id]={id,label:label.slice(0,34),type:String(t.type||'Finding').slice(0,28),icon:icons[i%icons.length],x,y,w:Math.min(175,Math.max(112,label.length*6+45)),h:52,desc:String(t.description||'Research finding. Verify important details with the listed sources.')+(t.relationship?'\n\nRelationship: '+t.relationship:''),tags:[t.evidence_status||'Web research',...(t.confidence?[Math.round(Number(t.confidence)*100)+'% confidence']:[])],source:sourceText||'Web research',page:sources[0]?.url||'Open source links below',evidence:'Web researched',excerpt:String(t.details||t.description||'').slice(0,1200),confidence:t.confidence,children:[],parent:parentId,color:palette[i%palette.length],sources,_pendingParent:parentId};
+   });
+   // Link after all nodes exist so parent order in the AI response does not matter.
+   normalized.forEach((t,i)=>{const id='research-topic-'+i;let pid=topics[id]._pendingParent;if(!topics[pid]||pid===id)pid=rootId;topics[id].parent=pid;topics[pid].children.push(id);delete topics[id]._pendingParent;});
+   // First-level branches are visible initially; expand any node to reveal deeper detail.
+   visible.add(rootId);expanded.add(rootId);topics[rootId].children.forEach(id=>visible.add(id));
+   selected=rootId;applyGraphLayout();renderGraph();selectNode(rootId);
+   const h2=document.querySelector('.panel-head h2'),sub=document.querySelector('.panel-head .sub');if(h2)h2.textContent='Research knowledge graph';if(sub)sub.textContent=`${items.length} researched nodes · Double-click a node or use its + control to expand`;
+   const sideName=document.getElementById('sideFileName');if(sideName)sideName.textContent=currentDocName;const sideMeta=document.getElementById('sideFileMeta');if(sideMeta)sideMeta.textContent=`${items.length} findings · Web research`;
+   const sourcePanel=ensureSourcePanel();const sourceContent=sourcePanel.querySelector('.source-content');sourceContent.innerHTML='';const card=document.createElement('div');card.className='doc-page';card.style.maxWidth='100%';const title=document.createElement('h3');title.textContent='Research summary: '+query;card.appendChild(title);const p=document.createElement('p');p.textContent=data.summary||'Summary unavailable.';card.appendChild(p);const sh=document.createElement('h3');sh.textContent='Sources';card.appendChild(sh);(data.sources||[]).slice(0,20).forEach(s=>{const a=document.createElement('a');a.href=s.url;a.target='_blank';a.rel='noopener noreferrer';a.textContent=s.title||s.url;a.style.cssText='display:block;color:#aeb9ff;font-size:11px;margin:8px 0;overflow-wrap:anywhere';card.appendChild(a)});sourceContent.appendChild(card);
+   const hist=readDocHistory();const snap={id:'research-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),name:currentDocName,text:currentDocText.slice(0,50000),documentId:null,updated:Date.now(),topics:Object.values(topics),visible:[...visible],expanded:[...expanded],selected};writeDocHistory([snap,...hist.filter(d=>d.name!==snap.name)]);renderDocHistory();
+   const empty=document.querySelector('.atlas-empty-state');if(empty)empty.remove();const top=document.getElementById('uploadTop');if(top)top.style.display='';saveGraph();
+   const sourcesBox=document.getElementById('researchSources');sourcesBox.innerHTML='';(data.sources||[]).slice(0,5).forEach(s=>{const a=document.createElement('a');a.href=s.url;a.target='_blank';a.rel='noopener noreferrer';a.textContent=s.title||s.url;a.style.marginRight='12px';sourcesBox.appendChild(a)});
+ }
+ async function researchTopic(){const query=researchInput.value.trim();if(!query){researchInput.focus();return}researchBtn.disabled=true;researchBtn.textContent='Researching…';document.getElementById('researchStatus').textContent='Searching the web and organizing findings into connected branches. This may take a little while.';document.getElementById('researchSources').innerHTML='';showProcessing(true,'Researching '+query,'Qarbi AI is gathering information and creating a multi-level knowledge graph.');try{const res=await fetch(API_BASE+'/api/research',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query,max_nodes:40})});const data=await res.json().catch(()=>({}));if(!res.ok)throw new Error(data.detail||'Research request failed. Check that the backend is updated and running.');if(!Array.isArray(data.topics)||!data.topics.length)throw new Error('Research completed without enough structured findings. Try a more specific name.');makeResearchGraph(data,query);document.getElementById('researchStatus').textContent=`Research complete · ${data.topics.length} nodes created. Some facts, especially fees and staff, may need official-source verification.`;setStatus('Web research complete',true);toast('Knowledge graph created for '+query)}catch(e){console.error('Qarbi AI research failed:',e);document.getElementById('researchStatus').textContent=e.message;toast(e.message||'Research failed')}finally{showProcessing(false);researchBtn.disabled=false;researchBtn.textContent='✦ Research & build graph'}}
+ researchBtn.addEventListener('click',researchTopic);researchInput.addEventListener('keydown',e=>{if(e.key==='Enter')researchTopic()});
+ async function processUpload(file){
+   if(!file)return;
+   const max=25*1024*1024;
+   if(file.size>max){toast('File is over the 25 MB limit.');return}
+   showProcessing(true,'Uploading '+file.name,'Please wait while Qarbi AI extracts the content and creates connected topics.');
+   setStatus('Processing source…');
+   const topUpload=document.getElementById('uploadTop');if(topUpload)topUpload.disabled=true;
+   toast('Analyzing '+file.name+'…');
+   let text='',serverResult=null,backendError='';currentDocId=null;
+   try{
+     const fd=new FormData();fd.append('file',file);
+     const res=await fetch(API_BASE+'/api/upload',{method:'POST',body:fd});
+     if(!res.ok)throw new Error((await res.json().catch(()=>({detail:'Backend upload failed'}))).detail||'Backend upload failed');
+     serverResult=await res.json();text=serverResult.text||serverResult.extracted_text||'';currentDocId=serverResult.document_id||serverResult.id||null;
+     setStatus(serverResult.extraction_mode==='ai'?'Backend + AI extraction':'Backend connected',true);
+   }catch(err){backendError=err.message;console.warn('Qarbi AI upload API error:',err.message)}
+   try{
+     if(!text && (file.type.startsWith('text/')||/\.(txt|md|csv|json)$/i.test(file.name)))text=await file.text();
+     if(!text && file.type==='application/pdf' && window.pdfjsLib){
+       try{pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';const buf=await file.arrayBuffer(),pdf=await pdfjsLib.getDocument({data:buf}).promise;const parts=[];for(let p=1;p<=pdf.numPages;p++){const pg=await pdf.getPage(p),tc=await pg.getTextContent();parts.push(`[Page ${p}]\n`+tc.items.map(x=>x.str).join(' '))}text=parts.join('\n\n')}catch(err){throw new Error('Could not read this PDF. Make sure the backend is running, then try again.')}
+     }
+     if(!text.trim()){
+       if(file.type.startsWith('image/'))throw new Error(backendError?'Image text could not be extracted. Check that the backend OCR is available and restart the backend.':'No text was returned for this image. Check that OCR is enabled in the backend.');
+       throw new Error(backendError?'Could not connect to Qarbi AI backend, and no readable text was found in this file. Start the backend and try again.':'No readable text was found in this file.');
+     }
+     setSourceText(text,file.name,serverResult?'Backend extraction':'Browser text extraction');
+     let terms=serverResult?.topics||serverResult?.concepts||serverResult?.graph?.topics;
+     if(typeof terms==='string'){try{terms=JSON.parse(terms)}catch{terms=[]}}
+     if(!Array.isArray(terms)||!terms.length){
+       const stop=new Set('the and for with that this from into your have has was are can use using used when then than their there these those about also each which will would should could system project based through between more most such'.split(' '));
+       const freq={};(text.match(/[A-Za-z][A-Za-z0-9+.#/-]{2,}/g)||[]).forEach(w=>{let k=w.toLowerCase();if(!stop.has(k))freq[k]=(freq[k]||0)+1});
+       terms=Object.keys(freq).sort((a,b)=>freq[b]-freq[a]||b.length-a.length).slice(0,12).map(k=>({label:titleCase(k),description:`“${titleCase(k)}” appears ${freq[k]} time(s) in this source.`,mentions:freq[k],evidence_status:'Found in source',excerpt:text.slice(Math.max(0,text.toLowerCase().indexOf(k)-80),text.toLowerCase().indexOf(k)+180)}));
+     }
+     if(!terms.length)throw new Error('Qarbi AI could read the file, but could not find enough text to build a graph. Try a text-based PDF or clearer image.');
+     makeGraphFromTerms(terms,file.name,serverResult?.summary||text.slice(0,500));
+     rememberCurrentDocument();
+     const top=document.getElementById('uploadTop');if(top)top.style.display='';
+     const empty=document.querySelector('.atlas-empty-state');if(empty)empty.remove();
+     setStatus(serverResult?'Backend connected':'Local extraction mode',!!serverResult);
+     toast(`Knowledge graph created from ${file.name}`);
+   }catch(err){
+     console.error('Qarbi AI source processing failed:',err);setStatus('Upload needs attention');toast(err.message||'Could not process this source.');
+   }finally{
+     showProcessing(false);if(topUpload){topUpload.disabled=false;topUpload.style.display=''}
+   }
+ }
+ document.getElementById('fileInput').accept='.pdf,.png,.jpg,.jpeg,.webp,.txt,.md,.docx,.csv,.json';document.getElementById('fileInput').onchange=e=>{const f=e.target.files[0];processUpload(f);e.target.value=''};
+ // Enrich selected-topic details with extracted source evidence.
+ const prevSelect=selectNode;selectNode=function(id){prevSelect(id);const t=topics[id];if(!t)return;if(t.excerpt){const old=document.getElementById('evidenceNote');old.textContent='Source excerpt: “'+t.excerpt.slice(0,260)+'” Evidence is linked to extracted text; page precision depends on the parser.'}saveGraph()};
+ // Real AI endpoint when configured; transparent local fallback otherwise.
+ const oldSendChat=sendChat;sendChat=async function(){const input=document.getElementById('chatInput'),q=input.value.trim();if(!q)return;addMessage('user','You',q);input.value='';const t=topics[selected]||{};addMessage('bot','Qarbi AI · working','Checking the selected topic and available source context…');const msgs=document.getElementById('chatMessages');try{const res=await fetch(API_BASE+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,selected_topic:{label:t.label,description:t.desc,excerpt:t.excerpt},document_text:currentDocText,document_id:currentDocId,conversation:chatHistory.slice(-10)})});if(!res.ok)throw new Error('API unavailable');const data=await res.json();msgs.lastElementChild.remove();addMessage('bot','Qarbi AI · '+(data.mode==='ai'?'AI answer':'setup notice'),data.answer);chatHistory.push({role:'user',content:q},{role:'assistant',content:data.answer});if(data.citations?.length){const cites=data.citations.map(c=>'Page '+(c.page||'not identified')+': '+c.excerpt).join('\n\n');addMessage('bot','Source evidence',cites)}setStatus(data.mode==='ai'?'Backend + AI connected':'Backend · AI not configured',data.mode==='ai')}catch(e){msgs.lastElementChild.remove();addMessage('bot','Qarbi AI · local explanation',`Selected topic: ${t.label||'Knowledge base'}\n\n${t.desc||'Upload a source and select a topic to explore it.'}\n\n${t.excerpt?'Source excerpt: “'+t.excerpt.slice(0,300)+'”\n\n':''}This answer is a local fallback, not a live AI response. To enable grounded AI chat, start the backend and set GEMINI_API_KEY in backend/.env.`);setStatus('Local demo mode')}};
+ document.getElementById('sendChat').onclick=sendChat;document.getElementById('chatInput').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat()}};
+ document.getElementById('atlasStatus')?.addEventListener('click',()=>{const v=prompt('Qarbi AI API base URL',API_BASE);if(v){localStorage.setItem('atlas_api_base',v.replace(/\/$/,''));location.reload()}});
+ // Add practical export controls to graph toolbar.
+ const toolbar=document.querySelector('.head-right');if(toolbar){const j=document.createElement('button');j.className='tiny-btn';j.textContent='⇩ JSON';j.title='Export graph as JSON';j.onclick=()=>exportFile('qarbi-ai-knowledge-graph.json',JSON.stringify({document:currentDocName,topics:Object.values(topics),edges:Object.values(topics).filter(t=>t.parent).map(t=>({source:t.parent,target:t.id,relationship:'RELATED_TO'}))},null,2),'application/json');toolbar.appendChild(j);const c=document.createElement('button');c.className='tiny-btn';c.textContent='⇩ CSV';c.title='Export topics as CSV';c.onclick=()=>{const rows=[['id','label','type','description','source','page','evidence'],...Object.values(topics).map(t=>[t.id,t.label,t.type,t.desc,t.source,t.page,t.evidence])];const csv=rows.map(r=>r.map(x=>'"'+String(x??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');exportFile('qarbi-ai-topics.csv',csv,'text/csv')};toolbar.appendChild(c)}
+ // Search, saved topics and graph persistence.
+ document.getElementById('searchBtn').onclick=()=>{const q=prompt('Search all topics in this graph:');if(!q)return;const hit=Object.values(topics).find(t=>t.label.toLowerCase().includes(q.toLowerCase()));if(hit){let cur=hit;while(cur.parent&&topics[cur.parent]){visible.add(cur.parent);expanded.add(cur.parent);cur=topics[cur.parent]}visible.add(hit.id);selectNode(hit.id);toast('Found '+hit.label)}else toast('No topic found. Try a different keyword.')};
+ document.getElementById('savedNav').onclick=()=>{saved.add(selected);localStorage.setItem('atlas_saved_topics',JSON.stringify([...saved]));toast('Saved '+(topics[selected]?.label||'topic'))};
+ document.getElementById('historyNav').onclick=()=>{renderDocHistory();const list=document.getElementById('atlasDocumentHistory');if(list)list.style.display=list.style.display==='none'?'block':'none';};
+ renderDocHistory();
+ // Restore the latest extracted workspace on refresh.
+ // Start with an empty workspace; new uploads populate the graph.
+
+ // Check API status without breaking standalone use.
+ fetch(API_BASE+'/api/health').then(r=>r.json()).then(d=>{if(d.ok)setStatus(d.ai_configured?'Backend + AI ready':'Backend connected · AI key optional',d.ai_configured)}).catch(()=>{});
+
+ // Universal, iterative research: expand any node with live, source-grounded research.
+ async function expandNodeLive(id){
+   const t=topics[id]; if(!t) return;
+   if(t.children && t.children.length && !expanded.has(id)){
+     expanded.add(id);t.children.forEach(c=>visible.add(c));selectNode(id);toast(`Expanded ${t.label}`);saveGraph();return;
+   }
+   const status=document.getElementById('researchStatus');
+   const btn=document.getElementById('expandSelected');
+   if(btn){btn.disabled=true;btn.textContent='Researching…'}
+   if(status)status.textContent=`Researching deeper branches of “${t.label}”…`;
+   showProcessing(true,'Expanding '+t.label,'Qarbi AI is researching this node and adding new connected findings.');
+   try{
+     const context=Object.values(topics).filter(n=>n.id!==id).map(n=>n.label).slice(0,80);
+     const res=await fetch(API_BASE+'/api/expand',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:currentDocName.replace(/^Research: /,''),parent_label:t.label,parent_description:t.desc||'',context_labels:context,max_nodes:12})});
+     const data=await res.json().catch(()=>({}));
+     if(!res.ok)throw new Error(data.detail||'Could not expand this node. Check the backend and model configuration.');
+     const palette=['#20a89a','#596df1','#d88a28','#8b63d9','#3988c8','#cf6c91'];
+     let added=0; const existing=new Set(Object.values(topics).map(n=>n.label.toLowerCase()));
+     const newItems=(data.topics||[]).filter(n=>n.label&&!existing.has(String(n.label).toLowerCase()));
+     newItems.forEach((n,i)=>{
+       const index=Object.keys(topics).length;const childId='research-expanded-'+Date.now().toString(36)+'-'+index;
+       const angle=(i/Math.max(newItems.length,1))*Math.PI*2;const radius=125;
+       const x=Math.max(55,Math.min(665,(Number(t.x)||360)+Math.cos(angle)*radius));
+       const y=Math.max(35,Math.min(465,(Number(t.y)||250)+Math.sin(angle)*radius*.72));
+       const sources=Array.isArray(n.sources)?n.sources:[];
+       topics[childId]={id:childId,label:String(n.label).slice(0,34),type:String(n.type||'Finding').slice(0,28),icon:['◇','∑','⚙','↗','⌘','◉','▦','✦'][index%8],x,y,w:Math.min(175,Math.max(112,String(n.label).length*6+45)),h:52,desc:String(n.description||'Research finding.')+(n.relationship?'\n\nRelationship: '+n.relationship:''),tags:[n.evidence_status||'Web research',...(n.confidence?[Math.round(Number(n.confidence)*100)+'% confidence']:[])],source:sources.map(s=>s.title||s.url).slice(0,3).join(' · ')||'Web research',page:sources[0]?.url||'Open source links below',evidence:'Web researched',excerpt:String(n.details||n.description||'').slice(0,1200),confidence:n.confidence,children:[],parent:id,color:palette[index%palette.length],sources};
+       t.children=t.children||[];t.children.push(childId);visible.add(childId);existing.add(String(n.label).toLowerCase());added++;
+     });
+     if(!added)throw new Error('No new nodes were found for this branch. Try a more specific topic.');
+     expanded.add(id);selectNode(id);renderGraph();
+     if(status)status.textContent=`Added ${added} new nodes under “${t.label}”. Sources are attached to the researched findings.`;
+     // Add newly discovered source links to the source panel without replacing previous evidence.
+     const sourceContent=ensureSourcePanel().querySelector('.source-content');
+     if(sourceContent){let section=sourceContent.querySelector('.expansion-sources');if(!section){section=document.createElement('div');section.className='expansion-sources';const h=document.createElement('h3');h.textContent='Additional research sources';section.appendChild(h);sourceContent.appendChild(section)}(data.sources||[]).forEach(s=>{if(!s.url)return;const a=document.createElement('a');a.href=s.url;a.target='_blank';a.rel='noopener noreferrer';a.textContent=s.title||s.url;a.style.cssText='display:block;color:#aeb9ff;font-size:11px;margin:8px 0;overflow-wrap:anywhere';section.appendChild(a)})}
+     const hist=readDocHistory();const snap={id:'research-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),name:currentDocName,text:currentDocText.slice(0,50000),documentId:currentDocId,updated:Date.now(),topics:Object.values(topics),visible:[...visible],expanded:[...expanded],selected};writeDocHistory([snap,...hist.filter(d=>d.name!==snap.name)]);renderDocHistory();saveGraph();toast(`Added ${added} nodes to ${t.label}`);
+   }catch(e){console.error('Qarbi AI node expansion failed:',e);if(status)status.textContent=e.message;toast(e.message||'Node expansion failed')}
+   finally{showProcessing(false);if(btn){btn.disabled=false;btn.textContent='Explore further ↗'}}
+ }
+ // Double-clicking a node expands existing children; once open, another expansion researches deeper.
+ expandNode=expandNodeLive;
+ document.getElementById('expandSelected').onclick=()=>expandNodeLive(selected);
+
+})();
+</script>
